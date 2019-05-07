@@ -5,12 +5,20 @@ import (
 	"log"
 
 	notify "github.com/govau/notify-client-go"
+	"github.com/govau/notify-client-go/notifyapi"
 )
 
 func check(msg string, err error) {
-	if err != nil {
-		log.Fatalf("%s: %T: %v", msg, err, err)
+	if err == nil {
+		return
 	}
+
+	if nerr, ok := err.(*notifyapi.Error); ok {
+		log.Fatalf("%s: Notify API error %d: %T: %v", msg, nerr.Code, nerr, nerr)
+		return
+	}
+
+	log.Fatalf("%s: %T: %v", msg, err, err)
 }
 
 func main() {
@@ -25,8 +33,8 @@ func main() {
 	flag.Parse()
 
 	client, err := notify.NewClient(apiKey)
-	check("could not create client", err)
+	check("Could not create client", err)
 
 	_, err = client.SendSMS(smsTemplateID, mobile)
-	check("could not send SMS", err)
+	check("Could not send SMS", err)
 }
