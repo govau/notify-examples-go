@@ -23,11 +23,11 @@ func check(msg string, err error) {
 
 func main() {
 	var apiKey string
-	var smsTemplateID string
+	var templateID string
 	var mobile string
 
 	flag.StringVar(&apiKey, "api-key", "", "Notify API key")
-	flag.StringVar(&smsTemplateID, "sms-template-id", "", "Notify SMS template ID")
+	flag.StringVar(&templateID, "template-id", "", "Notify SMS template ID, e.g. c1ad8967-41ae-4013-bdc1-af29d2ef3ce9")
 	flag.StringVar(&mobile, "mobile", "", "Recipient's mobile number")
 
 	flag.Parse()
@@ -35,6 +35,12 @@ func main() {
 	client, err := notify.NewClient(apiKey)
 	check("Could not create client", err)
 
-	_, err = client.SendSMS(smsTemplateID, mobile)
-	check("Could not send SMS", err)
+	options := []notify.SendSMSOption{
+		notify.Personalisation{
+			{"name", "Kim"},
+		},
+	}
+
+	_, err = client.SendSMS(templateID, mobile, options...)
+	check("Could not send message", err)
 }
