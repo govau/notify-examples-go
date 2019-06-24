@@ -41,7 +41,10 @@ func main() {
 		notify.Personalisation{
 			{"name", "Kim"},
 		},
-		notify.EmailReplyToID(replyTo),
+	}
+
+	if replyTo != "" {
+		options = append(options, notify.EmailReplyToID(replyTo))
 	}
 
 	_, err = client.SendEmail(templateID, email, options...)
